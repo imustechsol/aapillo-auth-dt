@@ -1,0 +1,53 @@
+{
+  "name": "aapillo-auth",
+  "version": "1.0.0",
+  "description": "Aapillo Auth - Enterprise Authentication System",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.aapillo.auth",
+    "productName": "Aapillo Auth",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "requestedExecutionLevel": "requireAdministrator",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": false,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "include": "installer.nsh"
+    }
+  },
+  "dependencies": {
+    "node-windows": "1.0.0-beta.7",
+    "electron-log": "^5.0.0",
+    "winston": "^3.10.0",
+    "crypto": "^1.0.1",
+    "node-forge": "^1.3.1",
+    "axios": "^1.5.0",
+    "sqlite3": "^5.1.6",
+    "bcrypt": "^5.1.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "electron": "^31.3.0",
+    "electron-builder": "^24.6.4"
+  }
+}

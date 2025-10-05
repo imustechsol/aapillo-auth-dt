@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Authentication Required</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="otp-body">
+    <div class="otp-container">
+        <div class="otp-header">
+            <h2>🔒 Authentication Required</h2>
+            <p>Enter the OTP sent to your registered mobile number</p>
+        </div>
+
+        <div class="otp-content">
+            <div class="user-info" id="userInfo">
+                <div class="user-display"></div>
+            </div>
+
+            <div class="otp-form">
+                <div class="form-group">
+                    <label for="otpInput">Enter OTP:</label>
+                    <input type="text" 
+                           id="otpInput" 
+                           class="otp-input"
+                           maxlength="6" 
+                           placeholder="000000" 
+                           autocomplete="off"
+                           autofocus>
+                </div>
+
+                <div class="otp-actions">
+                    <button class="btn btn-primary" id="verifyBtn" onclick="verifyOTP()">
+                        Verify OTP
+                    </button>
+                    <button class="btn btn-secondary" id="resendBtn" onclick="resendOTP()" disabled>
+                        Resend OTP
+                    </button>
+                </div>
+            </div>
+
+            <div class="otp-status" id="otpStatus"></div>
+
+            <div class="countdown" id="countdown"></div>
+        </div>
+
+        <div class="otp-footer">
+            <p>⚠️ This is a security measure to protect your account.</p>
+            <p>Contact your administrator if you need assistance.</p>
+        </div>
+    </div>
+
+    <script src="otp.js"></script>
+</body>
+</html>
