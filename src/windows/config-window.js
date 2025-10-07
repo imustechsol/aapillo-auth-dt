@@ -11,7 +11,7 @@ class ConfigWindow {
 
     async create() {
         try {
-            /* console.log("Creating ConfigWindow...");
+            console.log("Creating ConfigWindow...");
             this.window = new BrowserWindow({
                 width: 1000,
                 height: 700,
@@ -36,8 +36,7 @@ class ConfigWindow {
                 this.window = null;
             });
 
-            this.setupIPC(); */
-            this.window.loadURL("data:text/html,<h1>Hello from Config Window</h1>");
+            this.setupIPC();
 
         } catch (error) {
             log.error('Failed to create config window:', error);

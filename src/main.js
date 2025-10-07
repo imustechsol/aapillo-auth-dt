@@ -21,8 +21,7 @@ class AapilloAuthApp {
     }
 
     async initialize() {
-        console.log("init");
-        /* try {
+        try {
             log.info('Initializing Aapillo Auth system...');
 
             if (process.argv.includes('--dev')) {
@@ -44,7 +43,7 @@ class AapilloAuthApp {
         } catch (error) {
             log.error('Failed to initialize application:', error);
             this.showErrorDialog('Initialization Error', error.message);
-        } */
+        }
     }
 
     async showConfigWindow() {
