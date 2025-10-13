@@ -1,14 +1,16 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Aapillo Auth Configuration</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="config-container">
         <header>
-            <h1>Aapillo Auth Configuration</h1>
+            <h1>Aapillo Auth System</h1>
             <p>Configure your authentication system settings</p>
         </header>
 
@@ -20,7 +22,7 @@
 
         <!-- General Settings Tab -->
         <div id="general" class="tab-content active">
-            <div class="section">
+            <div class="section col mr-15">
                 <h3>Master Password</h3>
                 <div class="form-group">
                     <label>Master Password:</label>
@@ -32,7 +34,7 @@
                 </div>
             </div>
 
-            <div class="section">
+            <div class="section col ml-15">
                 <h3>API Configuration</h3>
                 <div class="form-group">
                     <label>API Endpoint:</label>
@@ -43,6 +45,8 @@
                     <input type="password" id="apiKey" placeholder="Enter API key" required>
                 </div>
             </div>
+
+            <div style="clear: both;"></div>
 
             <div class="actions">
                 <button class="btn btn-primary" onclick="saveMasterConfig()">Save Configuration</button>
@@ -55,7 +59,7 @@
             <div class="section">
                 <h3>System Users</h3>
                 <button class="btn btn-secondary" onclick="refreshUsers()">Refresh Users</button>
-                
+
                 <div class="users-list" id="usersList">
                     <div class="loading">Loading users...</div>
                 </div>
@@ -67,7 +71,7 @@
             <div class="section">
                 <h3>Configuration Backup</h3>
                 <p>Export your configuration for backup or import on another system.</p>
-                
+
                 <div class="actions">
                     <button class="btn btn-primary" onclick="exportConfig()">Export Configuration</button>
                     <button class="btn btn-secondary" onclick="importConfig()">Import Configuration</button>
@@ -90,32 +94,32 @@
                 <h3 id="panelTitle">User Configuration</h3>
                 <button class="close-btn" onclick="closeUserPanel()">×</button>
             </div>
-            
+
             <div class="panel-content">
                 <div class="form-group">
                     <label>UUID:</label>
                     <input type="text" id="userUuid" placeholder="Enter UUID for this user">
                 </div>
-                
+
                 <div class="form-group">
                     <label>OTP Skip Duration (minutes):</label>
                     <input type="number" id="otpSkipDuration" value="60" min="0" max="1440">
                     <small>Duration in minutes before requiring OTP again (0 = always require)</small>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Mobile Numbers:</label>
                     <textarea id="mobileNumbers" placeholder="Enter mobile numbers separated by commas"></textarea>
                     <small>Enter mobile numbers separated by commas (e.g., +1234567890, +0987654321)</small>
                 </div>
-                
+
                 <div class="form-group">
                     <label>
                         <input type="checkbox" id="userEnabled" checked>
                         Enable OTP authentication for this user
                     </label>
                 </div>
-                
+
                 <div class="panel-actions">
                     <button class="btn btn-primary" onclick="saveUserConfig()">Save User</button>
                     <button class="btn btn-secondary" onclick="closeUserPanel()">Cancel</button>
@@ -128,4 +132,5 @@
 
     <script src="config.js"></script>
 </body>
+
 </html>

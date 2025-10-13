@@ -182,7 +182,7 @@ app.whenReady().then(async () => {
     try {
         console.log("started");
         const mainWindow = new BrowserWindow({ width: 800, height: 600 });
-        await mainWindow.loadFile('index.html');
+        await mainWindow.loadFile('src/renderer/config.html');
         // await aapilloApp.initialize();
         console.log("initialized");
     } catch (e) {
