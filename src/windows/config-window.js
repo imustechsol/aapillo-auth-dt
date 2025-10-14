@@ -22,12 +22,18 @@ class ConfigWindow {
                 resizable: false,
                 maximizable: false,
                 show: false,
+                autoHideMenuBar: true,
+                menu: null,
                 title: 'Aapillo Auth - Configuration'
             });
 
-            await this.window.loadFile(path.join(__dirname, '../renderer/config.html'));
-
             this.window.once('ready-to-show', () => {
+                console.log('ready-to-show fired');
+                this.window.show();
+                this.window.focus();
+            });
+            this.window.webContents.once('did-finish-load', () => {
+                console.log('✅ did-finish-load fired');
                 this.window.show();
                 this.window.focus();
             });
@@ -35,6 +41,9 @@ class ConfigWindow {
             this.window.on('closed', () => {
                 this.window = null;
             });
+
+            const configPath = path.join(__dirname, '../renderer/config.html');
+            await this.window.loadFile(configPath);
 
             this.setupIPC();
 

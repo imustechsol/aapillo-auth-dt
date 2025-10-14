@@ -29,11 +29,20 @@ body {
     background: white;
 }
 
+footer {
+    padding: 20px;
+    font-size: 12px;
+}
+
 header {
     background: linear-gradient(307deg, #a6e749 0%, #2e7303 100%);
     color: white;
     padding: 20px;
-    text-align: center;
+    /* text-align: center; */
+}
+
+header img {
+    width: 49%;
 }
 
 header h1 {
