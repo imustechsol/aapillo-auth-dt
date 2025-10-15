@@ -120,7 +120,8 @@ async function renderUsers() {
             <div class="user-card ${isConfigured ? 'configured' : ''}" onclick="openUserPanel('${user.id}', '${user.name}')">
                 <div class="user-info">
                     <div class="user-name">${user.name}</div>
-                    <div class="user-id">ID: ${user.id.substring(0, 20)}...</div>
+                    <div class="user-caption">${user.description}</div>
+                    <div class="user-id">ID: ${user.id.substring(0, 20)}</div>
                     <div class="user-last-login">Last Login: ${user.lastLogin}</div>
                 </div>
                 <div class="user-status">

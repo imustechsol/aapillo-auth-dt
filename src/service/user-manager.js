@@ -17,26 +17,33 @@ class UserManager {
     async getSystemUsers() {
         try {
             // Get Windows users using wmic command
-            const command = 'wmic useraccount where "LocalAccount=True" get Name,SID,Disabled /format:csv';
+            const command = 'wmic useraccount where "LocalAccount=True" get AccountType,Name,SID,Status,Disabled,Description /format:csv';
             const output = execSync(command, { encoding: 'utf8' });
 
             const lines = output.split('\n').filter(line => line.trim() && !line.startsWith('Node'));
             const users = [];
 
+            // CHAYAN-DEKSTOP,512,Built-in account for administering the computer/domain,TRUE,Administrator,S-1-5-21-3792357250-27342704-4012658916-500,Degraded
+            // 1-AccountType, 2-Description, 3-Disabled, 4-Name, 5-SID, 6-Status
             for (let i = 1; i < lines.length; i++) {
+                
                 const parts = lines[i].split(',');
+                log.info(`User detail : ${parts}`);
                 if (parts.length >= 4) {
                     const user = {
-                        id: parts[1] || '', // SID
-                        name: parts[2] || '', // Name
-                        disabled: parts[0] === 'TRUE',
-                        lastLogin: parts[3] || 'Never'
+                        id: parts[5] || 'Not Available',
+                        name: parts[4] || 'Unknown',
+                        disabled: parts[3] === 'TRUE',
+                        lastLogin: '3792357250',
+                        description: parts[2] || 'Not Available',
+                        accounttype: parts[1],
+                        status: parts[6],
                     };
 
                     // Filter out system accounts and disabled users
                     if (user.name &&
                         !user.disabled &&
-                        !['Administrator', 'Guest', 'DefaultAccount', 'WDAGUtilityAccount'].includes(user.name)) {
+                        !['Administrator', 'Guest', 'DefaultAccount', 'WDAGUtilityAccount', 'VaultPotectionUser'].includes(user.name)) {
                         users.push(user);
                     }
                 }
