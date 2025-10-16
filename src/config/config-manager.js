@@ -61,7 +61,9 @@ class ConfigManager {
     }
 
     async loadMasterConfig(masterPassword) {
-        try {
+        const encryptedData = await fs.readFile(this.configFile, 'utf8');
+        log.info(`enc data: ${encryptedData}`);
+        /* try {
             const encryptedData = await fs.readFile(this.configFile, 'utf8');
             const decryptedData = decrypt(encryptedData, masterPassword);
             
@@ -79,7 +81,7 @@ class ConfigManager {
         } catch (error) {
             log.error('Failed to load master configuration:', error);
             return { success: false, error: error.message };
-        }
+        } */
     }
 
     async exportConfig() {

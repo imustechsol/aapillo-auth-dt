@@ -193,6 +193,15 @@ header p {
     background: #5a6268;
 }
 
+.btn-success {
+    background: #44a537;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #2f7c25;
+}
+
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;

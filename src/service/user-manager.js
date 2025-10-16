@@ -25,17 +25,16 @@ class UserManager {
 
             // CHAYAN-DEKSTOP,512,Built-in account for administering the computer/domain,TRUE,Administrator,S-1-5-21-3792357250-27342704-4012658916-500,Degraded
             // 1-AccountType, 2-Description, 3-Disabled, 4-Name, 5-SID, 6-Status
-            for (let i = 1; i < lines.length; i++) {
-                
+            for (let i = 1; i < lines.length; i++) {                
                 const parts = lines[i].split(',');
-                log.info(`User detail : ${parts}`);
+                log.info(`0 : ${parts[0]}, 1 : ${parts[1]},2 : ${parts[2]},3 : ${parts[3]},4 : ${parts[4]},5 : ${parts[5]},6 : ${parts[6]},7 : ${parts[7]}`);
                 if (parts.length >= 4) {
                     const user = {
                         id: parts[5] || 'Not Available',
                         name: parts[4] || 'Unknown',
                         disabled: parts[3] === 'TRUE',
                         lastLogin: '3792357250',
-                        description: parts[2] || 'Not Available',
+                        description: parts[2] || "A system user account",
                         accounttype: parts[1],
                         status: parts[6],
                     };

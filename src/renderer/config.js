@@ -121,7 +121,7 @@ async function renderUsers() {
                 <div class="user-info">
                     <div class="user-name">${user.name}</div>
                     <div class="user-caption">${user.description}</div>
-                    <div class="user-id">ID: ${user.id.substring(0, 20)}</div>
+                    <div class="user-id">ID: ${user.id.substring(0, 50)}</div>
                     <div class="user-last-login">Last Login: ${user.lastLogin}</div>
                 </div>
                 <div class="user-status">
@@ -235,7 +235,7 @@ function showMessage(message, type) {
     messageDiv.textContent = message;
     messageDiv.style.cssText = `
         position: fixed;
-        top: 20px;
+        bottom: 20px;
         right: 20px;
         padding: 15px 20px;
         border-radius: 4px;
