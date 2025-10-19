@@ -1,8 +1,13 @@
 {
   "name": "aapillo-auth",
-  "version": "1.0.0",
+  "version": "1.0",
   "description": "Aapillo Auth - Enterprise Authentication System",
   "main": "src/main.js",
+  "author": {
+    "name": "Chayan Chatterjee",
+    "email": "imustechsolutions@gmail.com",
+    "url": "https://imustech.in"
+  },
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
@@ -31,8 +36,7 @@
       "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": false,
       "createStartMenuShortcut": true,
-      "runAfterFinish": true,
-      "include": "installer.nsh"
+      "runAfterFinish": true
     }
   },
   "dependencies": {
@@ -48,6 +52,6 @@
   },
   "devDependencies": {
     "electron": "^31.7.7",
-    "electron-builder": "^24.6.4"
+    "electron-builder": "^26.0.12"
   }
 }
