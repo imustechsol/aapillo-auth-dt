@@ -33,9 +33,7 @@ class OTPWindow {
                 show: false,
                 frame: true,
                 title: 'Authentication Required'
-            });
-
-            await this.window.loadFile(path.join(__dirname, '../renderer/otp.html'));
+            });            
             
             // Pass user data to renderer
             this.window.webContents.once('dom-ready', () => {
@@ -50,6 +48,8 @@ class OTPWindow {
                 this.window.focus();
                 this.window.setAlwaysOnTop(true, 'screen-saver');
             });
+
+            await this.window.loadFile(path.join(__dirname, '../renderer/otp.html'));
 
             this.window.on('closed', () => {
                 this.window = null;

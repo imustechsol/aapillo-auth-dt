@@ -8,8 +8,8 @@ const { encrypt, decrypt } = require('../utils/crypto-utils');
 
 class ConfigManager {
     constructor() {
-        // this.configPath = path.join(process.env.PROGRAMDATA, 'AapilloAuth');
-        this.configPath = path.join(app.getPath('userData'));
+        this.configPath = path.join(process.env.PROGRAMDATA, 'AapilloAuth');
+        // this.configPath = path.join(app.getPath('userData'));
         this.configFile = path.join(this.configPath, 'config.enc');
         this.masterConfig = null;
     }
@@ -38,7 +38,7 @@ class ConfigManager {
             await this.ensureConfigDir();
 
             // Hash master password
-            config.masterPassword = "12345678";
+            const secretKey = "1234567890";
             const hashedPassword = await bcrypt.hash(config.masterPassword, 12);
 
             const configData = {
@@ -50,7 +50,7 @@ class ConfigManager {
             };
 
             // Encrypt and save
-            const encryptedConfig = encrypt(JSON.stringify(configData), config.masterPassword);
+            const encryptedConfig = encrypt(JSON.stringify(configData), secretKey);
             await fs.writeFile(this.configFile, encryptedConfig, 'utf8');
 
             this.masterConfig = configData;
@@ -134,10 +134,10 @@ class ConfigManager {
     async getMasterConfig() {
         try {
             const encryptedData = await fs.readFile(this.configFile, 'utf8');
-            const decryptedData = decrypt(encryptedData, "12345678");
+            const decryptedData = decrypt(encryptedData, "1234567890");
             const config = JSON.parse(decryptedData);
             this.masterConfig = config;
-            log.info('Master configuration loaded successfully');            
+            log.info('Master configuration loaded successfully');
             return { success: true, config };
         } catch (error) {
             log.error('Failed to load master configuration:', error);

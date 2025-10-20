@@ -10,7 +10,9 @@ const execAsync = util.promisify(execSync);
 
 class UserManager {
     constructor() {
-        this.usersConfigPath = path.join(process.env.PROGRAMDATA, 'AapilloAuth', 'users.enc');
+        this.configPath = path.join(process.env.PROGRAMDATA, 'AapilloAuth');
+        // this.configPath = path.join(app.getPath('userData'));
+        this.usersConfigPath = path.join(this.configPath, 'users.enc');
         this.usersConfig = new Map();
     }
 
@@ -25,7 +27,7 @@ class UserManager {
 
             // CHAYAN-DEKSTOP,512,Built-in account for administering the computer/domain,TRUE,Administrator,S-1-5-21-3792357250-27342704-4012658916-500,Degraded
             // 1-AccountType, 2-Description, 3-Disabled, 4-Name, 5-SID, 6-Status
-            for (let i = 1; i < lines.length; i++) {                
+            for (let i = 1; i < lines.length; i++) {
                 const parts = lines[i].split(',');
                 log.info(`0 : ${parts[0]}, 1 : ${parts[1]},2 : ${parts[2]},3 : ${parts[3]},4 : ${parts[4]},5 : ${parts[5]},6 : ${parts[6]},7 : ${parts[7]}`);
                 if (parts.length >= 4) {
@@ -108,10 +110,10 @@ class UserManager {
         }
     }
 
-    async saveUsersConfig(masterPassword) {
+    async saveUsersConfig(secretKey) {
         try {
             const usersData = Object.fromEntries(this.usersConfig);
-            const encryptedData = encrypt(JSON.stringify(usersData), masterPassword);
+            const encryptedData = encrypt(JSON.stringify(usersData), secretKey);
 
             await fs.writeFile(this.usersConfigPath, encryptedData);
             log.info('Users configuration saved successfully');
@@ -131,6 +133,8 @@ class UserManager {
                 lastOTPTime: null,
                 updatedAt: new Date().toISOString()
             });
+
+            this.saveUsersConfig("1234567890");
 
             log.info(`User configuration saved for: ${userId}`);
             return { success: true };

@@ -121,10 +121,10 @@ class LoginInterceptor extends EventEmitter {
             const { userId, username } = session;
             
             // Skip administrator accounts
-            if (await WindowsAPI.isUserAdmin(userId)) {
+            /* if (await WindowsAPI.isUserAdmin(userId)) {
                 log.info(`Skipping admin user: ${username}`);
                 return;
-            }
+            } */
             
             log.info(`New session detected: ${username} (${userId})`);
             

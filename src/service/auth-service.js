@@ -66,10 +66,10 @@ class AuthService extends EventEmitter {
             log.info(`Login attempt detected for user: ${username} (${userId})`);
             
             // Check if OTP is required for this user
-            if (!this.userManager.isOTPRequired(userId)) {
+            /* if (!this.userManager.isOTPRequired(userId)) {
                 log.info(`OTP not required for user: ${username}`);
                 return { requiresOTP: false, allowed: true };
-            }
+            } */
             
             const userConfig = this.userManager.getUserConfig(userId);
             if (!userConfig || !userConfig.enabled) {
