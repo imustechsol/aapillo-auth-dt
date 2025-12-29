@@ -16,7 +16,7 @@ class OTPWindow {
             const primaryDisplay = screen.getPrimaryDisplay();
             const { width, height } = primaryDisplay.workAreaSize;
 
-            this.window = new BrowserWindow({
+            /* this.window = new BrowserWindow({
                 width: 450,
                 height: 350,
                 x: Math.floor((width - 450) / 2),
@@ -33,8 +33,25 @@ class OTPWindow {
                 show: false,
                 frame: true,
                 title: 'Authentication Required'
-            });            
-            
+            }); */
+            this.window = new BrowserWindow({
+                width: 400,
+                height: 300,
+                frame: false,
+                fullscreen: true,
+                alwaysOnTop: true,
+                kiosk: true,
+                resizable: false,
+                movable: false,
+                minimizable: false,
+                maximizable: false,
+                closable: false,
+                skipTaskbar: true,
+                webPreferences: {
+                    preload: path.join(__dirname, '../preload/otp-preload.js')
+                }
+            });
+
             // Pass user data to renderer
             this.window.webContents.once('dom-ready', () => {
                 this.window.webContents.send('init-otp', {

@@ -26,6 +26,8 @@ class AapilloAuthApp {
         try {
             log.info('Initializing Aapillo Auth system...');
 
+            await this.configManager.loadMasterConfig();
+
             if (process.argv.includes('--dev')) {
                 await this.showConfigWindow();
                 return;
@@ -38,6 +40,7 @@ class AapilloAuthApp {
                 // Show configuration window for admin setup
                 await this.showConfigWindow();
             } else {
+                await this.userManager.loadUsersConfig();
                 // Start background service
                 await this.startBackgroundService();
             }
@@ -71,6 +74,9 @@ class AapilloAuthApp {
             log.info('Starting background authentication service...');
 
             this.authService = new AuthService(this.configManager, this.userManager);
+            this.authService.on('show-otp', (userId, userConfig) => {
+                this.showOTPWindow(userId, userConfig);
+            });
             await this.authService.start();
 
             // Hide from taskbar - run completely in background
@@ -143,31 +149,31 @@ if (!gotTheLock) {
     ipcMain.handle('get-system-users', async () => {
         return await aapilloApp.userManager.getSystemUsers();
     });
-    
+
     ipcMain.handle('save-user-config', async (event, userId, config) => {
         return await aapilloApp.userManager.saveUserConfig(userId, config);
     });
-    
+
     ipcMain.handle('get-user-config', async (event, userId) => {
         return await aapilloApp.userManager.getUserConfig(userId);
     });
-    
+
     ipcMain.handle('save-master-config', async (event, config) => {
         return await aapilloApp.configManager.saveMasterConfig(config);
     });
-    
+
     ipcMain.handle('export-config', async () => {
         return await aapilloApp.configManager.exportConfig();
     });
-    
+
     ipcMain.handle('import-config', async (event, configData) => {
         return await aapilloApp.configManager.importConfig(configData);
     });
-    
+
     ipcMain.handle('verify-otp', async (event, userId, otp) => {
         return await aapilloApp.authService.verifyOTP(userId, otp);
     });
-    
+
     ipcMain.handle('request-otp', async (event, userId) => {
         return await aapilloApp.authService.requestOTP(userId);
     });

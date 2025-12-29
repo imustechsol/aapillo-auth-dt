@@ -10,15 +10,17 @@ class OTPManager {
 
     async sendOTP(uuid, mobileNumbers) {
         try {
-            log.info(`Sending OTP for UUID: ${uuid}`);
+            log.info(`Sending OTP for UUID: ${uuid}, Numbers: ${mobileNumbers}`);
+            log.info(`API endpoint at otp manager: ${this.apiEndpoint}`);
             
             const response = await axios.post(`${this.apiEndpoint}/send-otp`, {
                 uuid: uuid,
+                secret: this.apiKey,
                 mobile_numbers: mobileNumbers,
                 timestamp: new Date().toISOString()
             }, {
                 headers: {
-                    'Authorization': `Bearer ${this.apiKey}`,
+                    // 'Authorization': `Bearer ${this.apiKey}`,
                     'Content-Type': 'application/json'
                 },
                 timeout: 10000

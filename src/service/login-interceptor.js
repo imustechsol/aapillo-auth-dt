@@ -16,13 +16,13 @@ class LoginInterceptor extends EventEmitter {
     async start() {
         try {
             log.info('Starting login interceptor...');
-            
+
             // Register Windows login notification
             await this.registerLoginHook();
-            
+
             // Start monitoring logon sessions
             this.startSessionMonitoring();
-            
+
             this.isMonitoring = true;
             log.info('Login interceptor started successfully');
         } catch (error) {
@@ -34,16 +34,16 @@ class LoginInterceptor extends EventEmitter {
     async stop() {
         try {
             log.info('Stopping login interceptor...');
-            
+
             this.isMonitoring = false;
-            
+
             if (this.monitorProcess) {
                 this.monitorProcess.kill();
                 this.monitorProcess = null;
             }
-            
+
             await this.unregisterLoginHook();
-            
+
             log.info('Login interceptor stopped');
         } catch (error) {
             log.error('Error stopping login interceptor:', error);
@@ -105,7 +105,7 @@ class LoginInterceptor extends EventEmitter {
 
             // Get current active sessions
             const sessions = await WindowsAPI.getActiveSessions();
-            
+
             for (const session of sessions) {
                 if (session.state === 'Active' && !this.pendingLogins.has(session.userId)) {
                     await this.handleNewSession(session);
@@ -116,15 +116,15 @@ class LoginInterceptor extends EventEmitter {
         }
     }
 
-    async handleNewSession(session) {
+    /* async handleNewSession(session) {
         try {
             const { userId, username } = session;
             
             // Skip administrator accounts
-            /* if (await WindowsAPI.isUserAdmin(userId)) {
+            if (await WindowsAPI.isUserAdmin(userId)) {
                 log.info(`Skipping admin user: ${username}`);
                 return;
-            } */
+            }
             
             log.info(`New session detected: ${username} (${userId})`);
             
@@ -145,6 +145,22 @@ class LoginInterceptor extends EventEmitter {
         } catch (error) {
             log.error('Error handling new session:', error);
         }
+    } */
+
+    async handleNewSession(session) {
+        const { userId, username, sessionId } = session;
+
+        if (!userId || this.pendingLogins.has(userId)) return;
+
+        const result = await this.authService.handleLoginAttempt(userId, username);
+
+        if (result.requiresOTP) {
+            this.pendingLogins.set(userId, {
+                username,
+                sessionId,
+                timestamp: Date.now()
+            });
+        }
     }
 
     allowLogin(userId) {
@@ -152,10 +168,10 @@ class LoginInterceptor extends EventEmitter {
             const pendingLogin = this.pendingLogins.get(userId);
             if (pendingLogin) {
                 log.info(`Allowing login for user: ${pendingLogin.username}`);
-                
+
                 // Unlock the session
                 WindowsAPI.unlockSession(pendingLogin.sessionId);
-                
+
                 // Remove from pending logins
                 this.pendingLogins.delete(userId);
             }
@@ -169,10 +185,10 @@ class LoginInterceptor extends EventEmitter {
             const pendingLogin = this.pendingLogins.get(userId);
             if (pendingLogin) {
                 log.info(`Denying login for user: ${pendingLogin.username}`);
-                
+
                 // Logoff the session
                 WindowsAPI.logoffSession(pendingLogin.sessionId);
-                
+
                 // Remove from pending logins
                 this.pendingLogins.delete(userId);
             }
