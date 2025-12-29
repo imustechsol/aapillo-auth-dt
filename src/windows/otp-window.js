@@ -35,18 +35,18 @@ class OTPWindow {
                 title: 'Authentication Required'
             }); */
             this.window = new BrowserWindow({
-                width: 400,
-                height: 300,
-                frame: false,
-                fullscreen: true,
-                alwaysOnTop: true,
-                kiosk: true,
-                resizable: false,
-                movable: false,
-                minimizable: false,
-                maximizable: false,
-                closable: false,
-                skipTaskbar: true,
+                width: 1024,
+                height: 768,
+                frame: true, //default- false
+                fullscreen: false, //default- true
+                alwaysOnTop: false, //default- true
+                kiosk: false, //default- true
+                resizable: true, //default- false
+                movable: true, //default- false
+                minimizable: true, //default- false
+                maximizable: true, //default- false
+                closable: true, //default- false
+                skipTaskbar: false, //default- true
                 webPreferences: {
                     preload: path.join(__dirname, '../preload/otp-preload.js')
                 }

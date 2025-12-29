@@ -2,20 +2,20 @@ const axios = require('axios');
 const log = require('../utils/logger');
 
 class OTPManager {
-    constructor(masterConfig) {
-        this.apiEndpoint = masterConfig.apiEndpoint;
-        this.apiKey = masterConfig.apiKey;
+    constructor() {
+        // this.apiEndpoint = masterConfig.apiEndpoint;
+        // this.apiKey = masterConfig.apiKey;
         this.pendingOTPs = new Map();
     }
 
-    async sendOTP(uuid, mobileNumbers) {
+    async sendOTP(uuid, mobileNumbers, config) {
         try {
             log.info(`Sending OTP for UUID: ${uuid}, Numbers: ${mobileNumbers}`);
-            log.info(`API endpoint at otp manager: ${this.apiEndpoint}`);
-            
-            const response = await axios.post(`${this.apiEndpoint}/send-otp`, {
+            log.info(`API endpoint at otp manager: ${apiEndpoint}`);
+
+            const response = await axios.post(`${config.apiEndpoint}/send-otp`, {
                 uuid: uuid,
-                secret: this.apiKey,
+                secret: config.apiKey,
                 mobile_numbers: mobileNumbers,
                 timestamp: new Date().toISOString()
             }, {
@@ -33,21 +33,21 @@ class OTPManager {
                     timestamp: new Date(),
                     mobileNumbers: mobileNumbers
                 });
-                
+
                 log.info(`OTP sent successfully for UUID: ${uuid}`);
-                return { 
-                    success: true, 
+                return {
+                    success: true,
                     message: 'OTP sent successfully',
-                    otpRef: response.data.otp_ref 
+                    otpRef: response.data.otp_ref
                 };
             } else {
                 throw new Error(response.data.message || 'Failed to send OTP');
             }
         } catch (error) {
             log.error('Failed to send OTP:', error);
-            return { 
-                success: false, 
-                error: error.response?.data?.message || error.message 
+            return {
+                success: false,
+                error: error.response?.data?.message || error.message
             };
         }
     }
@@ -60,7 +60,7 @@ class OTPManager {
             }
 
             log.info(`Verifying OTP for UUID: ${uuid}`);
-            
+
             const response = await axios.post(`${this.apiEndpoint}/verify-otp`, {
                 uuid: uuid,
                 otp: otp,
@@ -77,20 +77,20 @@ class OTPManager {
             if (response.data.success) {
                 // Remove pending OTP
                 this.pendingOTPs.delete(uuid);
-                
+
                 log.info(`OTP verified successfully for UUID: ${uuid}`);
-                return { 
-                    success: true, 
-                    message: 'OTP verified successfully' 
+                return {
+                    success: true,
+                    message: 'OTP verified successfully'
                 };
             } else {
                 throw new Error(response.data.message || 'Invalid OTP');
             }
         } catch (error) {
             log.error('Failed to verify OTP:', error);
-            return { 
-                success: false, 
-                error: error.response?.data?.message || error.message 
+            return {
+                success: false,
+                error: error.response?.data?.message || error.message
             };
         }
     }

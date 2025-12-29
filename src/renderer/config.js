@@ -71,16 +71,22 @@ async function testConnection() {
 
     showMessage('Testing connection...', 'info');
 
+    log.info("api endpoint at config ", apiEndpoint);
     try {
         const response = await fetch(`${apiEndpoint}/health`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`
+                'Content-Type': 'application/json'
             },
+            body: JSON.stringify({
+                api_key: apiKey
+            }),
             timeout: 5000
         });
 
-        if (response.ok) {
+        const data = await response.json();
+
+        if (data.status=="success") {
             showMessage('Connection test successful!', 'success');
         } else {
             showMessage('Connection test failed: ' + response.statusText, 'error');

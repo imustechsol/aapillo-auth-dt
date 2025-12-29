@@ -19,16 +19,9 @@ class AuthService extends EventEmitter {
         try {
             log.info('Starting Aapillo Auth Service...');
 
-            // Load master configuration
-            const masterConfig = this.configManager.getMasterConfig();
-            log.info(`API endpoint at auth service: ${masterConfig.apiEndpoint}`);
-            if (!masterConfig) {
-                throw new Error('No master configuration found');
-            }
-
             // Initialize components
             this.sessionManager = new SessionManager();
-            this.otpManager = new OTPManager(masterConfig);
+            this.otpManager = new OTPManager();
             this.loginInterceptor = new LoginInterceptor(this.userManager, this);
 
             // Start login monitoring
@@ -106,7 +99,14 @@ class AuthService extends EventEmitter {
                 throw new Error('User configuration not found');
             }
 
-            const result = await this.otpManager.sendOTP(userConfig.uuid, userConfig.mobileNumbers);
+            // Load master configuration
+            const masterConfig = await this.configManager.getMasterConfig();
+            log.info("Master Config at auth service:", masterConfig);
+            if (!masterConfig) {
+                throw new Error('No master configuration found');
+            }
+
+            const result = await this.otpManager.sendOTP(userConfig.uuid, userConfig.mobileNumbers, masterConfig);
             log.info(`OTP requested for user: ${userId}`);
 
             return result;

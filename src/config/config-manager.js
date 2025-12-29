@@ -88,6 +88,22 @@ class ConfigManager {
         }
     }
 
+    async getMasterConfig() {
+        try {
+            const encryptedData = await fs.readFile(this.configFile, 'utf8');
+            const decryptedData = decrypt(encryptedData, "1234567890");
+            const config = JSON.parse(decryptedData);
+            this.masterConfig = config;
+            log.info('Master configuration loaded successfully');
+            // return { success: true, config };
+            return config;
+        } catch (error) {
+            log.error('Failed to load master configuration:', error);
+            return { success: false, error: error.message };
+        }
+        // return this.masterConfig;
+    }
+
     async exportConfig() {
         try {
             if (!this.masterConfig) {
@@ -129,22 +145,7 @@ class ConfigManager {
             log.error('Failed to import configuration:', error);
             return { success: false, error: error.message };
         }
-    }
-
-    async getMasterConfig() {
-        try {
-            const encryptedData = await fs.readFile(this.configFile, 'utf8');
-            const decryptedData = decrypt(encryptedData, "1234567890");
-            const config = JSON.parse(decryptedData);
-            this.masterConfig = config;
-            log.info('Master configuration loaded successfully');
-            return { success: true, config };
-        } catch (error) {
-            log.error('Failed to load master configuration:', error);
-            return { success: false, error: error.message };
-        }
-        // return this.masterConfig;
-    }
+    }    
 }
 
 module.exports = ConfigManager;

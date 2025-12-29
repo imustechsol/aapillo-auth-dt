@@ -26,7 +26,7 @@ class AapilloAuthApp {
         try {
             log.info('Initializing Aapillo Auth system...');
 
-            await this.configManager.loadMasterConfig();
+            // await this.configManager.loadMasterConfig();
 
             if (process.argv.includes('--dev')) {
                 await this.showConfigWindow();
