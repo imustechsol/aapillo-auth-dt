@@ -82,7 +82,7 @@ class AuthService extends EventEmitter {
                 this.emit('show-otp', userId, userConfig);
 
                 // 🔥 AUTO-SEND OTP
-                await this.requestOTP(userId);
+                // await this.requestOTP(userId);
 
                 return { requiresOTP: true, allowed: false };
             }
@@ -101,7 +101,6 @@ class AuthService extends EventEmitter {
 
             // Load master configuration
             const masterConfig = await this.configManager.getMasterConfig();
-            log.info("Master Config at auth service:", masterConfig);
             if (!masterConfig) {
                 throw new Error('No master configuration found');
             }

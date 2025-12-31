@@ -1,4 +1,5 @@
 const { ipcRenderer } = require('electron');
+const log = require('../utils/logger');
 
 let currentUserId = null;
 let systemUsers = [];
@@ -71,8 +72,8 @@ async function testConnection() {
 
     showMessage('Testing connection...', 'info');
 
-    log.info("api endpoint at config ", apiEndpoint);
     try {
+        log.info("api endpoint at test connection:", apiEndpoint);
         const response = await fetch(`${apiEndpoint}/health`, {
             method: 'POST',
             headers: {
@@ -84,17 +85,19 @@ async function testConnection() {
             timeout: 5000
         });
 
-        const data = await response.json();
+        const data = await response.json();   // IMPORTANT
+        log.info("date at test connection:", data);
 
-        if (data.status=="success") {
+        if (data.status === "success") {
             showMessage('Connection test successful!', 'success');
         } else {
-            showMessage('Connection test failed: ' + response.statusText, 'error');
+            showMessage('Connection test failed: ' + (data.message || 'Unknown error'), 'error');
         }
     } catch (error) {
         showMessage('Connection test failed: ' + error.message, 'error');
     }
 }
+
 
 async function loadUsers() {
     const usersList = document.getElementById('usersList');

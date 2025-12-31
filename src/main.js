@@ -178,6 +178,13 @@ if (!gotTheLock) {
         return await aapilloApp.authService.requestOTP(userId);
     });
 
+    ipcMain.handle('close-otp-window', () => {
+        if (aapilloApp.otpWindow) {
+            aapilloApp.otpWindow.allowClose = true;
+            aapilloApp.otpWindow.close();
+        }
+    });
+
     app.whenReady().then(async () => {
         try {
             console.log("started");

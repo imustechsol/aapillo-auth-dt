@@ -5,7 +5,7 @@ let userConfig = null;
 let resendTimeout = null;
 let countdownInterval = null;
 let attemptCount = 0;
-const maxAttempts = 3;
+const maxAttempts = 2;
 
 ipcRenderer.on('init-otp', (event, data) => {
     userId = data.userId;
@@ -101,7 +101,7 @@ async function verifyOTP() {
             showStatus('✓ OTP verified successfully! Access granted.', 'success');
             
             setTimeout(() => {
-                window.close();
+                ipcRenderer.invoke('close-otp-window');
             }, 2000);
         } else {
             const remainingAttempts = maxAttempts - attemptCount;

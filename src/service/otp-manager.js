@@ -11,7 +11,6 @@ class OTPManager {
     async sendOTP(uuid, mobileNumbers, config) {
         try {
             log.info(`Sending OTP for UUID: ${uuid}, Numbers: ${mobileNumbers}`);
-            log.info(`API endpoint at otp manager: ${apiEndpoint}`);
 
             const response = await axios.post(`${config.apiEndpoint}/send-otp`, {
                 uuid: uuid,
@@ -61,7 +60,19 @@ class OTPManager {
 
             log.info(`Verifying OTP for UUID: ${uuid}`);
 
-            const response = await axios.post(`${this.apiEndpoint}/verify-otp`, {
+            if (otp == pendingOTP.otpRef) {
+                this.pendingOTPs.delete(uuid);
+
+                log.info(`OTP verified successfully for UUID: ${uuid}`);
+                return {
+                    success: true,
+                    message: 'OTP verified successfully'
+                };
+            } else {
+                throw new Error('Invalid OTP');
+            }
+
+            /* const response = await axios.post(`${this.apiEndpoint}/verify-otp`, {
                 uuid: uuid,
                 otp: otp,
                 otp_ref: pendingOTP.otpRef,
@@ -85,7 +96,7 @@ class OTPManager {
                 };
             } else {
                 throw new Error(response.data.message || 'Invalid OTP');
-            }
+            } */
         } catch (error) {
             log.error('Failed to verify OTP:', error);
             return {

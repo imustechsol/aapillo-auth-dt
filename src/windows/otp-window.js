@@ -8,6 +8,7 @@ class OTPWindow {
         this.userConfig = userConfig;
         this.configManager = configManager;
         this.window = null;
+        this.allowClose = false;
     }
 
     async create() {
@@ -15,6 +16,7 @@ class OTPWindow {
             // Create window on primary display center
             const primaryDisplay = screen.getPrimaryDisplay();
             const { width, height } = primaryDisplay.workAreaSize;
+            const otpWindowInstance = this;
 
             /* this.window = new BrowserWindow({
                 width: 450,
@@ -37,18 +39,20 @@ class OTPWindow {
             this.window = new BrowserWindow({
                 width: 1024,
                 height: 768,
-                frame: true, //default- false
-                fullscreen: false, //default- true
-                alwaysOnTop: false, //default- true
-                kiosk: false, //default- true
-                resizable: true, //default- false
-                movable: true, //default- false
-                minimizable: true, //default- false
-                maximizable: true, //default- false
-                closable: true, //default- false
-                skipTaskbar: false, //default- true
+                frame: false, //default- false
+                fullscreen: true, //default- true
+                alwaysOnTop: true, //default- true
+                kiosk: true, //default- true
+                resizable: false, //default- false
+                movable: false, //default- false
+                minimizable: false, //default- false
+                maximizable: false, //default- false
+                closable: false, //default- false
+                skipTaskbar: true, //default- true
                 webPreferences: {
-                    preload: path.join(__dirname, '../preload/otp-preload.js')
+                    nodeIntegration: true,
+                    contextIsolation: false,
+                    enableRemoteModule: false
                 }
             });
 
@@ -74,8 +78,15 @@ class OTPWindow {
 
             // Prevent closing with Alt+F4 or X button
             this.window.on('close', (event) => {
-                event.preventDefault();
-                // Only allow programmatic closing
+                if (!this.allowClose) {
+                    event.preventDefault();
+                }
+            });
+
+            this.window.on('close', (event) => {
+                if (!otpWindowInstance.allowClose) {
+                    event.preventDefault();
+                }
             });
 
         } catch (error) {
@@ -86,6 +97,7 @@ class OTPWindow {
 
     close() {
         if (this.window) {
+            this.allowClose = true;
             this.window.removeAllListeners('close');
             this.window.close();
         }
