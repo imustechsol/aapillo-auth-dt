@@ -98,8 +98,19 @@ class OTPWindow {
     close() {
         if (this.window) {
             this.allowClose = true;
+
             this.window.removeAllListeners('close');
-            this.window.close();
+
+            this.window.hide();
+            
+            // IMPORTANT FIXES
+            this.window.setKiosk(false);
+            this.window.setFullScreen(false);
+            this.window.setClosable(true);
+
+            setTimeout(() => {
+                this.window.close();
+            }, 100); // small delay ensures kiosk mode is fully off
         }
     }
 
