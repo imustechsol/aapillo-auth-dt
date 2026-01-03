@@ -1,11 +1,12 @@
 const { ipcRenderer } = require('electron');
+const defaultConfig = require('../config/default-config');
 
 let userId = null;
 let userConfig = null;
 let resendTimeout = null;
 let countdownInterval = null;
 let attemptCount = 0;
-const maxAttempts = 2;
+const maxAttempts = defaultConfig.auth.maxOtpRetries;
 
 ipcRenderer.on('init-otp', (event, data) => {
     userId = data.userId;
@@ -24,7 +25,7 @@ function setupOTPInput() {
         const value = e.target.value.replace(/[^0-9]/g, '');
         e.target.value = value;
         
-        if (value.length === 6) {
+        if (value.length === defaultConfig.auth.otpLength) {
             verifyOTP();
         }
     });
@@ -38,8 +39,8 @@ function setupOTPInput() {
     otpInput.addEventListener('paste', (e) => {
         e.preventDefault();
         const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
-        otpInput.value = pastedData.substring(0, 6);
-        if (pastedData.length === 6) {
+        otpInput.value = pastedData.substring(0, defaultConfig.auth.otpLength);
+        if (pastedData.length === defaultConfig.auth.otpLength) {
             verifyOTP();
         }
     });
@@ -78,7 +79,7 @@ async function verifyOTP() {
         return;
     }
     
-    if (otp.length !== 6) {
+    if (otp.length !== defaultConfig.auth.otpLength) {
         showStatus('OTP must be 6 digits', 'error');
         return;
     }

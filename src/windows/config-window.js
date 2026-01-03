@@ -1,6 +1,7 @@
 const { BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const log = require('../utils/logger');
+const defaultConfig = require('../config/default-config');
 
 class ConfigWindow {
     constructor(configManager, userManager) {
@@ -13,8 +14,8 @@ class ConfigWindow {
         try {
             console.log("Creating ConfigWindow...");
             this.window = new BrowserWindow({
-                width: 1000,
-                height: 700,
+                width: defaultConfig.ui.configWindow.width,
+                height: defaultConfig.ui.configWindow.height,
                 webPreferences: {
                     nodeIntegration: true,
                     contextIsolation: false
@@ -24,7 +25,7 @@ class ConfigWindow {
                 show: false,
                 autoHideMenuBar: true,
                 menu: null,
-                title: 'Aapillo Auth - Configuration'
+                title: defaultConfig.ui.configWindow.title
             });
 
             this.window.once('ready-to-show', () => {
@@ -67,10 +68,10 @@ class ConfigWindow {
             const result = await this.configManager.exportConfig();
             if (result.success) {
                 const { filePath } = await dialog.showSaveDialog(this.window, {
-                    title: 'Export Configuration',
-                    defaultPath: 'aapillo-auth-config.aac',
+                    title: defaultConfig.config.exportTitle,
+                    defaultPath: defaultConfig.config.eximConfigFile,
                     filters: [
-                        { name: 'Aapillo Auth Config', extensions: ['aac'] }
+                        { name: defaultConfig.config.eximConfigName, extensions: [defaultConfig.config.eximExtension] }
                     ]
                 });
 
@@ -85,9 +86,9 @@ class ConfigWindow {
 
         ipcMain.handle('config-import', async () => {
             const { filePaths } = await dialog.showOpenDialog(this.window, {
-                title: 'Import Configuration',
+                title: defaultConfig.config.importTitle,
                 filters: [
-                    { name: 'Aapillo Auth Config', extensions: ['aac'] }
+                    { name: defaultConfig.config.eximConfigName, extensions: [defaultConfig.config.eximExtension] }
                 ],
                 properties: ['openFile']
             });

@@ -590,3 +590,41 @@ header p {
     background: #c1c1c1;
     border-radius: 4px;
 }
+
+.lock-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lock-box {
+    background: #fff;
+    padding: 30px;
+    width: 360px;
+    text-align: center;
+    border-radius: 6px;
+}
+
+.lock-box input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+}
+
+.lock-box button {
+    margin-top: 15px;
+    width: 100%;
+}
+
+#unlockError {
+    color: red;
+    margin-top: 10px;
+}
+
+#masterLock {
+    display: none;
+}

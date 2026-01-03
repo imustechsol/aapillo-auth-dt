@@ -5,13 +5,14 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const log = require('../utils/logger');
 const { encrypt, decrypt } = require('../utils/crypto-utils');
+const defaultConfig = require('default-config');
 
 class ConfigManager {
     constructor() {
-        this.configPath = path.join(process.env.PROGRAMDATA, 'AapilloAuth');
-        // this.configPath = path.join(app.getPath('userData'));
-        this.configFile = path.join(this.configPath, 'config.enc');
+        this.configPath = defaultConfig.config.configPath
+        this.configFile = path.join(this.configPath, defaultConfig.config.configFile);
         this.masterConfig = null;
+        this.encryptionKey = defaultConfig.keys.encryptionKey;
     }
 
     async isFirstRun() {
@@ -20,6 +21,15 @@ class ConfigManager {
             return false;
         } catch {
             return true;
+        }
+    }
+
+    async configFileExists() {
+        try {
+            await fs.access(this.configFile);
+            return true;
+        } catch {
+            return false;
         }
     }
 
@@ -38,7 +48,6 @@ class ConfigManager {
             await this.ensureConfigDir();
 
             // Hash master password
-            const secretKey = "1234567890";
             const hashedPassword = await bcrypt.hash(config.masterPassword, 12);
 
             const configData = {
@@ -46,11 +55,11 @@ class ConfigManager {
                 apiEndpoint: config.apiEndpoint,
                 apiKey: config.apiKey,
                 createdAt: new Date().toISOString(),
-                version: '1.0.0'
+                version: defaultConfig.app.version
             };
 
             // Encrypt and save
-            const encryptedConfig = encrypt(JSON.stringify(configData), secretKey);
+            const encryptedConfig = encrypt(JSON.stringify(configData), this.encryptionKey);
             await fs.writeFile(this.configFile, encryptedConfig, 'utf8');
 
             this.masterConfig = configData;
@@ -69,7 +78,7 @@ class ConfigManager {
             await fs.access(this.configFile);
             const encryptedData = await fs.readFile(this.configFile);
             log.info(`enc data: ${encryptedData}`);
-            const decryptedData = decrypt(encryptedData, masterPassword);
+            const decryptedData = decrypt(encryptedData, this.encryptionKey);
 
             const config = JSON.parse(decryptedData);
 
@@ -91,7 +100,7 @@ class ConfigManager {
     async getMasterConfig() {
         try {
             const encryptedData = await fs.readFile(this.configFile, 'utf8');
-            const decryptedData = decrypt(encryptedData, "1234567890");
+            const decryptedData = decrypt(encryptedData, this.encryptionKey);
             const config = JSON.parse(decryptedData);
             this.masterConfig = config;
             log.info('Master configuration loaded successfully');
@@ -112,7 +121,7 @@ class ConfigManager {
 
             const configData = await fs.readFile(this.configFile, 'utf8');
             const exportData = {
-                version: '1.0.0',
+                version: defaultConfig.app.version,
                 exportDate: new Date().toISOString(),
                 config: configData
             };
@@ -145,7 +154,7 @@ class ConfigManager {
             log.error('Failed to import configuration:', error);
             return { success: false, error: error.message };
         }
-    }    
+    }
 }
 
 module.exports = ConfigManager;

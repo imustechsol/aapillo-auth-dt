@@ -1,5 +1,6 @@
 const { ipcRenderer } = require('electron');
 const log = require('../utils/logger');
+const defaultConfig = require('../config/default-config');
 
 let currentUserId = null;
 let systemUsers = [];
@@ -98,7 +99,6 @@ async function testConnection() {
     }
 }
 
-
 async function loadUsers() {
     const usersList = document.getElementById('usersList');
     usersList.innerHTML = '<div class="loading">Loading users...</div>';
@@ -159,12 +159,12 @@ async function openUserPanel(userId, userName) {
 
     if (userConfig) {
         document.getElementById('userUuid').value = userConfig.uuid || '';
-        document.getElementById('otpSkipDuration').value = userConfig.otpSkipDuration || 60;
+        document.getElementById('otpSkipDuration').value = userConfig.otpSkipDuration || defaultConfig.auth.defaultSkipDuration;
         document.getElementById('mobileNumbers').value = userConfig.mobileNumbers ? userConfig.mobileNumbers.join(', ') : '';
         document.getElementById('userEnabled').checked = userConfig.enabled !== false;
     } else {
         document.getElementById('userUuid').value = '';
-        document.getElementById('otpSkipDuration').value = 60;
+        document.getElementById('otpSkipDuration').value = defaultConfig.auth.defaultSkipDuration;
         document.getElementById('mobileNumbers').value = '';
         document.getElementById('userEnabled').checked = true;
     }
@@ -270,10 +270,42 @@ function showMessage(message, type) {
     }, 3000);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    const exists = await ipcRenderer.invoke('check-config-ondisk');
+    if (exists.exists) {
+        document.getElementById('masterLock').style.display = 'flex';
+    }
+
     if (document.getElementById('users').classList.contains('active')) {
         loadUsers();
     }
 });
 
-document.getElementById('overlay').addEventListener('click', closeUserPanel);
+// document.getElementById('overlay').addEventListener('click', closeUserPanel);
+
+/* async function checkConfigExists() {
+    try {
+        const result = await ipcRenderer.invoke('get-master-config-exists');
+        return result.exists;
+    } catch {
+        return false;
+    }
+} */
+
+async function unlockConfig() {
+    const password = document.getElementById('unlockPassword').value;
+    const errorEl = document.getElementById('unlockError');
+
+    if (!password) {
+        errorEl.textContent = 'Master Password required';
+        return;
+    }
+
+    const result = await ipcRenderer.invoke('verify-master-password', password);
+
+    if (result.success) {
+        document.getElementById('masterLock').style.display = 'none';
+    } else {
+        errorEl.textContent = 'Invalid master password';
+    }
+}

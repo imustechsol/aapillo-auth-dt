@@ -1,13 +1,15 @@
+const { BrowserWindow, screen } = require('electron');
 const path = require('path');
 const os = require('os');
+const { encrypt } = require('../utils/crypto-utils');
+
+const primaryDisplay = screen.getPrimaryDisplay();
+const { width, height } = primaryDisplay.workAreaSize;
 
 module.exports = {
     app: {
         name: 'Aapillo Auth',
-        version: '1.0.0',
-        dataPath: path.join(os.homedir(), '.aapillo-auth'),
-        configPath: path.join(process.env.PROGRAMDATA, 'AapilloAuth'),
-        logPath: path.join(process.env.PROGRAMDATA, 'AapilloAuth', 'logs')
+        version: '1.0.0'
     },
 
     service: {
@@ -18,10 +20,10 @@ module.exports = {
 
     auth: {
         otpLength: 6,
-        otpExpiration: 10 * 60 * 1000, // 10 minutes
+        otpExpiration: 3 * 60 * 1000, // 10 minutes
         maxOtpRetries: 3,
         defaultSkipDuration: 60, // minutes
-        sessionCheckInterval: 3000, // 3 seconds
+        sessionCheckInterval: 10000, // 3 seconds
         cleanupInterval: 5 * 60 * 1000 // 5 minutes
     },
 
@@ -41,7 +43,7 @@ module.exports = {
     logging: {
         level: 'info',
         maxFiles: 10,
-        maxSize: '10m',
+        maxSize: 10 * 1024 * 1024,
         datePattern: 'YYYY-MM-DD',
         auditFile: 'audit.log',
         errorFile: 'error.log',
@@ -50,15 +52,15 @@ module.exports = {
 
     ui: {
         otpWindow: {
-            width: 450,
-            height: 350,
+            width: width,
+            height: height,
             resizable: false,
             alwaysOnTop: true
         },
         configWindow: {
-            width: 1000,
-            height: 700,
-            resizable: true
+            width: 1024,
+            height: 768,
+            title: 'Aapillo Auth - Configuration',
         }
     },
 
@@ -67,5 +69,22 @@ module.exports = {
         hideFromTaskbar: true,
         runAsService: true,
         autoStart: true
+    },
+
+    keys: {
+        encryptionKey: "1234567890"
+    },
+
+    config: {
+        dataPath: path.join(os.homedir(), '.aapillo-auth'),
+        configPath: path.join(process.env.PROGRAMDATA, 'AapilloAuth'),
+        logPath: path.join(process.env.PROGRAMDATA, 'AapilloAuth', 'logs'),
+        configFile: 'config.enc',
+        usersConfigFile: 'users.enc',
+        eximExtension: 'acdf',
+        eximConfigFile: 'aappillo_config.acdf',
+        eximConfigName: 'Aappillo Config',
+        exportTitle: 'Export Configuration',
+        importTitle: 'Import Configuration'
     }
 };

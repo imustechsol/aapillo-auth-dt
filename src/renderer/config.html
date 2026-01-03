@@ -35,7 +35,8 @@
                 </div>
                 <div class="form-group">
                     <label>Fail Over Numbers</label>
-                    <textarea id="failOverNums" placeholder="Enter fail over numbers separated by comma (,)" required></textarea>
+                    <textarea id="failOverNums" placeholder="Enter fail over numbers separated by comma (,)"
+                        required></textarea>
                 </div>
             </div>
 
@@ -43,11 +44,13 @@
                 <h3>API Configuration</h3>
                 <div class="form-group">
                     <label>API Endpoint:</label>
-                    <input type="url" id="apiEndpoint" placeholder="https://api.example.com" required>
+                    <input type="url" id="apiEndpoint" placeholder="https://api.example.com"
+                        value="https://auth.aappillotechnologies.cloud/web/open" required>
                 </div>
                 <div class="form-group">
                     <label>API Key:</label>
-                    <input type="password" id="apiKey" placeholder="Enter API key" required>
+                    <input type="password" id="apiKey" placeholder="Enter API key" value="61746332354063686179616e"
+                        required>
                 </div>
             </div>
 
@@ -116,7 +119,7 @@
                 <div class="form-group">
                     <label>Mobile Numbers:</label>
                     <textarea id="mobileNumbers" placeholder="Enter mobile numbers separated by commas"></textarea>
-                    <small>Enter mobile numbers separated by commas (e.g., +1234567890, +0987654321)</small>
+                    <small>Enter mobile numbers separated by commas (e.g. 9801234567,987654321)</small>
                 </div>
 
                 <div class="form-group">
@@ -136,6 +139,15 @@
         <div class="overlay" id="overlay"></div>
 
         <footer>2025 All rights reserved by Aappillo Technologies Pvt Ltd</footer>
+    </div>
+
+    <div id="masterLock" class="lock-overlay">
+        <div class="lock-box">
+            <h2>Enter Master Password</h2>
+            <input type="password" id="unlockPassword" placeholder="Master Password">
+            <button class="btn btn-primary" onclick="unlockConfig()">Unlock</button>
+            <p id="unlockError"></p>
+        </div>
     </div>
 
     <script src="config.js"></script>

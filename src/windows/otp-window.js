@@ -1,6 +1,7 @@
-const { BrowserWindow, screen } = require('electron');
+const { BrowserWindow } = require('electron');
 const path = require('path');
 const log = require('../utils/logger');
+const defaultConfig = require('../config/default-config');
 
 class OTPWindow {
     constructor(userId, userConfig, configManager) {
@@ -14,31 +15,13 @@ class OTPWindow {
     async create() {
         try {
             // Create window on primary display center
-            const primaryDisplay = screen.getPrimaryDisplay();
-            const { width, height } = primaryDisplay.workAreaSize;
+            // const primaryDisplay = screen.getPrimaryDisplay();
+            // const { width, height } = primaryDisplay.workAreaSize;
             const otpWindowInstance = this;
 
-            /* this.window = new BrowserWindow({
-                width: 450,
-                height: 350,
-                x: Math.floor((width - 450) / 2),
-                y: Math.floor((height - 350) / 2),
-                webPreferences: {
-                    nodeIntegration: true,
-                    contextIsolation: false
-                },
-                resizable: false,
-                maximizable: false,
-                minimizable: false,
-                alwaysOnTop: true,
-                skipTaskbar: true,
-                show: false,
-                frame: true,
-                title: 'Authentication Required'
-            }); */
             this.window = new BrowserWindow({
-                width: 1024,
-                height: 768,
+                width: defaultConfig.ui.otpWindow.width,
+                height: defaultConfig.ui.otpWindow.height,
                 frame: false, //default- false
                 fullscreen: true, //default- true
                 alwaysOnTop: true, //default- true
@@ -96,22 +79,14 @@ class OTPWindow {
     }
 
     close() {
-        if (this.window) {
-            this.allowClose = true;
+        if (!this.window) return;
 
-            this.window.removeAllListeners('close');
+        this.allowClose = true;
 
-            this.window.hide();
-            
-            // IMPORTANT FIXES
-            this.window.setKiosk(false);
-            this.window.setFullScreen(false);
-            this.window.setClosable(true);
+        this.window.removeAllListeners();
 
-            setTimeout(() => {
-                this.window.close();
-            }, 100); // small delay ensures kiosk mode is fully off
-        }
+        this.window.destroy();
+        this.window = null;
     }
 
     focus() {

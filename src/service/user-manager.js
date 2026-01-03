@@ -3,16 +3,13 @@ const fs = require('fs').promises;
 const path = require('path');
 const log = require('../utils/logger');
 const { encrypt, decrypt } = require('../utils/crypto-utils');
+const defaultConfig = require('../config/default-config');
 
 class UserManager {
     constructor() {
-        /* if (!encryptionKey) {
-            throw new Error('UserManager requires a valid encryption key');
-        } */
-
-        this.encryptionKey = '1234567890';
-        this.configPath = path.join(process.env.PROGRAMDATA, 'AapilloAuth');
-        this.usersConfigPath = path.join(this.configPath, 'users.enc');
+        this.encryptionKey = defaultConfig.keys.encryptionKey;
+        this.configPath = defaultConfig.config.configPath;
+        this.usersConfigPath = path.join(this.configPath, defaultConfig.config.usersConfigFile);
         this.usersConfig = new Map();
     }
 
@@ -87,7 +84,7 @@ class UserManager {
     async saveUserConfig(userId, config) {
         this.usersConfig.set(userId, {
             uuid: config.uuid,
-            otpSkipDuration: Number(config.otpSkipDuration) || 60,
+            otpSkipDuration: Number(config.otpSkipDuration) || defaultConfig.auth.defaultSkipDuration,
             mobileNumbers: Array.isArray(config.mobileNumbers)
                 ? config.mobileNumbers
                 : (config.mobileNumbers || '').split(',').map(n => n.trim()).filter(Boolean),
@@ -125,12 +122,12 @@ class UserManager {
         await this.persist();
     }
 
-    getAllUsersConfig() {
+    /* getAllUsersConfig() {
         return Array.from(this.usersConfig.entries()).map(([userId, cfg]) => ({
             userId,
             ...cfg
         }));
-    }
+    } */
 }
 
 module.exports = UserManager;

@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const defaultConfig = require('../config/default-config');
 
-const logPath = defaultConfig.app.logPath;
+const logPath = defaultConfig.config.logPath;
 
 if (!fs.existsSync(logPath)) {
     fs.mkdirSync(logPath, { recursive: true });
@@ -27,23 +27,23 @@ const logger = winston.createLogger({
     format: customFormat,
     transports: [
         new winston.transports.File({
-            filename: path.join(logPath, 'error.log'),
+            filename: path.join(logPath, defaultConfig.logging.errorFile),
             level: 'error',
-            maxsize: 10 * 1024 * 1024,
-            maxFiles: 5,
+            maxsize: defaultConfig.logging.maxSize,
+            maxFiles: defaultConfig.logging.maxFiles,
             tailable: true
         }),
         new winston.transports.File({
-            filename: path.join(logPath, 'combined.log'),
-            maxsize: 10 * 1024 * 1024,
-            maxFiles: 10,
+            filename: path.join(logPath, defaultConfig.logging.combinedFile),
+            maxsize: defaultConfig.logging.maxSize,
+            maxFiles: defaultConfig.logging.maxFiles,
             tailable: true
         }),
         new winston.transports.File({
-            filename: path.join(logPath, 'audit.log'),
+            filename: path.join(logPath, defaultConfig.logging.auditFile),
             level: 'info',
-            maxsize: 10 * 1024 * 1024,
-            maxFiles: 10,
+            maxsize: defaultConfig.logging.maxSize,
+            maxFiles: defaultConfig.logging.maxFiles,
             tailable: true,
             format: winston.format.combine(
                 winston.format.timestamp(),

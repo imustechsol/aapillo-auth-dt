@@ -26,8 +26,6 @@ class AapilloAuthApp {
         try {
             log.info('Initializing Aapillo Auth system...');
 
-            // await this.configManager.loadMasterConfig();
-
             if (process.argv.includes('--dev')) {
                 await this.showConfigWindow();
                 return;
@@ -185,6 +183,19 @@ if (!gotTheLock) {
         }
     });
 
+    ipcMain.handle('verify-master-password', async (event, password) => {
+        return await aapilloApp.configManager.loadMasterConfig(password);
+    });
+
+    ipcMain.handle('check-config-ondisk', async () => {
+        const exists = await aapilloApp.configManager.configFileExists();
+        if (!exists) {
+            aapilloApp.configManager.masterConfig = null;
+        }
+
+        return { exists };
+    });
+
     app.whenReady().then(async () => {
         try {
             console.log("started");
@@ -203,14 +214,14 @@ if (!gotTheLock) {
         }
     });
 
-    /* app.on('second-instance', (event, commandLine, workingDirectory) => {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
         // This runs if a second instance is opened
         // You can focus your existing window here
         if (mainWindow) {
             if (mainWindow.isMinimized()) mainWindow.restore();
             mainWindow.focus();
         }
-    }); */
+    });
 
     app.on('window-all-closed', (event) => {
         // Don't quit app when all windows closed - keep running in background

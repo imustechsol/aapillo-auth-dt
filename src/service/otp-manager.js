@@ -1,5 +1,6 @@
 const axios = require('axios');
 const log = require('../utils/logger');
+const defaultConfig = require('../config/default-config');
 
 class OTPManager {
     constructor() {
@@ -22,7 +23,7 @@ class OTPManager {
                     // 'Authorization': `Bearer ${this.apiKey}`,
                     'Content-Type': 'application/json'
                 },
-                timeout: 10000
+                timeout: defaultConfig.api.timeout
             });
 
             if (response.data.success) {
@@ -108,7 +109,7 @@ class OTPManager {
 
     cleanupExpiredOTPs() {
         const now = new Date();
-        const expiredTime = 10 * 60 * 1000; // 10 minutes
+        const expiredTime =defaultConfig.auth.otpExpiration; // 3 minutes
 
         for (const [uuid, otpData] of this.pendingOTPs) {
             if (now - otpData.timestamp > expiredTime) {
