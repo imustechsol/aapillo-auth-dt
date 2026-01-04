@@ -1,10 +1,5 @@
-const { BrowserWindow, screen } = require('electron');
 const path = require('path');
 const os = require('os');
-const { encrypt } = require('../utils/crypto-utils');
-
-const primaryDisplay = screen.getPrimaryDisplay();
-const { width, height } = primaryDisplay.workAreaSize;
 
 module.exports = {
     app: {
@@ -20,10 +15,10 @@ module.exports = {
 
     auth: {
         otpLength: 6,
-        otpExpiration: 3 * 60 * 1000, // 10 minutes
+        otpExpiration: 3 * 60 * 1000, // 3 minutes
         maxOtpRetries: 3,
         defaultSkipDuration: 60, // minutes
-        sessionCheckInterval: 10000, // 3 seconds
+        sessionCheckInterval: 10000, // 10 seconds
         cleanupInterval: 5 * 60 * 1000 // 5 minutes
     },
 
@@ -52,8 +47,8 @@ module.exports = {
 
     ui: {
         otpWindow: {
-            width: width,
-            height: height,
+            width: 900,
+            height: 600,
             resizable: false,
             alwaysOnTop: true
         },

@@ -1,6 +1,7 @@
 const EventEmitter = require('events');
 const log = require('../utils/logger');
 const WindowsAPI = require('../utils/windows-api');
+const defaultConfig = require('../config/default-config');
 
 class SessionManager extends EventEmitter {
     constructor() {
@@ -12,6 +13,7 @@ class SessionManager extends EventEmitter {
 
     async start() {
         try {
+            if (this.isMonitoring) return;
             log.info('Starting session monitoring...');
             
             this.isMonitoring = true;
@@ -22,7 +24,7 @@ class SessionManager extends EventEmitter {
             // Start periodic monitoring
             this.monitoringInterval = setInterval(() => {
                 this.scanSessions();
-            }, 3000); // Check every 3 seconds
+            }, defaultConfig.auth.sessionCheckInterval); // Check every 10 seconds
             
             log.info('Session monitoring started');
         } catch (error) {
@@ -57,6 +59,8 @@ class SessionManager extends EventEmitter {
             const currentSessions = await WindowsAPI.getActiveSessions();
             const currentSessionIds = new Set();
 
+            log.debug(JSON.stringify(currentSessions, null, 2));
+            
             // Process current sessions
             for (const session of currentSessions) {
                 currentSessionIds.add(session.sessionId);

@@ -1,27 +1,19 @@
 const { execSync, spawn } = require('child_process');
-const os = require('os');
 const log = require('./logger');
 
 class WindowsAPI {
-    static async isRunningAsAdmin() {
+    
+    static isUserAdmin() {
         try {
-            // Check if running with administrator privileges
-            execSync('net session', { stdio: 'ignore' });
-            return true;
-        } catch {
-            return false;
-        }
-    }
+            // Administrators group SID (language independent)
+            const ADMIN_SID = 'S-1-5-32-544';
 
-    static async isUserAdmin(userId) {
-        try {
-            // Check if user is in administrators group
-            const command = `net localgroup administrators`;
-            const output = execSync(command, { encoding: 'utf8' });
+            const output = execSync('whoami /groups', {
+                encoding: 'utf8'
+            });
 
-            // This is a simplified check - in production, you'd use proper Windows API
-            return output.includes('Administrator');
-        } catch {
+            return output.includes(ADMIN_SID);
+        } catch (err) {
             return false;
         }
     }
@@ -187,6 +179,32 @@ class WindowsAPI {
             log.error(`Failed to unregister startup service:`, error);
             throw error;
         }
+    }
+
+    static async createStartupTask() {
+        return new Promise((resolve, reject) => {
+            const exePath = process.execPath;
+
+            const taskCmd = `schtasks /create /sc onlogon /rl highest /f ^
+                            /tn "AapilloAuth" ^
+                            /tr "\\"${exePath}\\""`.trim();
+
+            execSync(taskCmd, { windowsHide: true }, (error, stdout, stderr) => {
+                if (error) {
+                    reject(stderr || error.message);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    static async startupTaskExists() {
+        return new Promise((resolve) => {
+            execSync('schtasks /query /tn "AapilloAuth"', (err) => {
+                resolve(!err);
+            });
+        });
     }
 }
 

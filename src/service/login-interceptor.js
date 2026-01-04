@@ -2,6 +2,7 @@ const EventEmitter = require('events');
 const { execSync, spawn } = require('child_process');
 const log = require('../utils/logger');
 const WindowsAPI = require('../utils/windows-api');
+const defaultConfig = require('../config/default-config');
 
 class LoginInterceptor extends EventEmitter {
     constructor(userManager, authService) {
@@ -96,7 +97,7 @@ class LoginInterceptor extends EventEmitter {
         // This is a simplified version - in production, you'd use proper Windows API integration
         setInterval(() => {
             this.checkForNewSessions();
-        }, 2000);
+        }, defaultConfig.auth.sessionCheckInterval);
     }
 
     async checkForNewSessions() {
@@ -150,17 +151,21 @@ class LoginInterceptor extends EventEmitter {
     async handleNewSession(session) {
         const { userId, username, sessionId } = session;
 
-        if (!userId || this.pendingLogins.has(userId)) return;
+        const otpRequired = await this.userManager.isOTPRequired(userId);
 
-        const result = await this.authService.handleLoginAttempt(userId, username);
-
-        if (result.requiresOTP) {
-            this.pendingLogins.set(userId, {
-                username,
-                sessionId,
-                timestamp: Date.now()
-            });
+        if (otpRequired) {
+            // await WindowsAPI.lockSession(session.sessionId);
+            const result = await this.authService.handleLoginAttempt(userId, username);
+            if (result.requiresOTP) {
+                this.pendingLogins.set(userId, {
+                    username,
+                    sessionId,
+                    timestamp: Date.now()
+                });
+            }
         }
+
+        // if (!userId || this.pendingLogins.has(userId)) return;        
     }
 
     allowLogin(userId) {

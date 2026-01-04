@@ -1,4 +1,4 @@
-const { BrowserWindow } = require('electron');
+const { BrowserWindow, screen } = require('electron');
 const path = require('path');
 const log = require('../utils/logger');
 const defaultConfig = require('../config/default-config');
@@ -15,13 +15,13 @@ class OTPWindow {
     async create() {
         try {
             // Create window on primary display center
-            // const primaryDisplay = screen.getPrimaryDisplay();
-            // const { width, height } = primaryDisplay.workAreaSize;
+            const primaryDisplay = screen.getPrimaryDisplay();
+            const { width, height } = primaryDisplay.workAreaSize;
             const otpWindowInstance = this;
 
             this.window = new BrowserWindow({
-                width: defaultConfig.ui.otpWindow.width,
-                height: defaultConfig.ui.otpWindow.height,
+                width: width || defaultConfig.ui.otpWindow.width,
+                height: height || defaultConfig.ui.otpWindow.height,
                 frame: false, //default- false
                 fullscreen: true, //default- true
                 alwaysOnTop: true, //default- true

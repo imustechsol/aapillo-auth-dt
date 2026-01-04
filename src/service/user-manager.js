@@ -101,7 +101,7 @@ class UserManager {
         return this.usersConfig.get(userId) || null;
     }
 
-    isOTPRequired(userId) {
+    /* isOTPRequired(userId) {
         const cfg = this.getUserConfig(userId);
         if (!cfg || !cfg.enabled) return false;
 
@@ -109,6 +109,16 @@ class UserManager {
 
         const diffMin = (Date.now() - new Date(cfg.lastOTPTime)) / 60000;
         return diffMin >= cfg.otpSkipDuration;
+    } */
+
+    async isOTPRequired(userId) {
+        const user = await this.getUserConfig(userId);
+
+        if (!user || !user.enabled) return false;
+        if (!user.lastOTPTime) return true;
+
+        const skipMs = (user.otpSkipDuration || defaultConfig.auth.defaultSkipDuration) * 60 * 1000;
+        return Date.now() > new Date(user.lastOTPTime).getTime() + skipMs;
     }
 
     async updateLastOTPTime(userId) {

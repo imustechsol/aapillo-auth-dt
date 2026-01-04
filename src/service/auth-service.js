@@ -56,33 +56,46 @@ class AuthService extends EventEmitter {
     }
 
     async handleLoginAttempt(userId, username) {
+        const otpRequired = await this.userManager.isOTPRequired(userId);
+
+        log.info('OTP CHECK DEBUG', {
+            userId,
+            lastOtpVerifiedAt: this.userManager.getUserConfig(userId)?.lastOtpVerifiedAt,
+            otpSkipDuration: this.userManager.getUserConfig(userId)?.otpSkipDuration,
+            now: Date.now(),
+            isOtpRequired: otpRequired
+        });
+
         try {
             log.info(`Login attempt detected for user: ${username} (${userId})`);
 
             const userConfig = this.userManager.getUserConfig(userId);
 
-            // ❌ No config → deny login
+            //No config → deny login
             if (!userConfig) {
-                log.warn(`Login denied: no config for user ${username}`);
+                log.info(`Login denied: no config for user ${username}`);
                 return { requiresOTP: false, allowed: false };
             }
 
-            // ❌ Config exists but disabled → deny login
+            //Config exists but disabled → deny login
             if (!userConfig.enabled) {
-                log.warn(`Login denied: user disabled ${username}`);
+                log.info(`Login denied: user disabled ${username}`);
                 return { requiresOTP: false, allowed: false };
             }
 
-            // ✅ OTP not required (skip window valid)
-            if (!this.userManager.isOTPRequired(userId)) {
+            //OTP not required (skip window valid)            
+            if (!otpRequired) {
                 log.info(`OTP skipped for user: ${username}`);
+
+                const session = this.sessionManager.getSessionByUserId(userId);
+                if (session) {
+                    this.sessionManager.setSessionAuthenticated(session.sessionId, true);
+                }
+
                 return { requiresOTP: false, allowed: true };
             } else {
-                // 🔐 OTP required
+                //OTP required
                 this.emit('show-otp', userId, userConfig);
-
-                // 🔥 AUTO-SEND OTP
-                // await this.requestOTP(userId);
 
                 return { requiresOTP: true, allowed: false };
             }
@@ -125,13 +138,18 @@ class AuthService extends EventEmitter {
             const result = await this.otpManager.verifyOTP(userConfig.uuid, otp);
 
             if (result.success) {
+                log.info(`OTP verified successfully for user: ${userId}`);
+
                 // Update last OTP time
                 await this.userManager.updateLastOTPTime(userId);
 
                 // Allow login
                 this.loginInterceptor.allowLogin(userId);
 
-                log.info(`OTP verified successfully for user: ${userId}`);
+                const session = this.sessionManager.getSessionByUserId(userId);
+                if (session) {
+                    this.sessionManager.setSessionAuthenticated(session.sessionId, true);
+                }
             }
 
             return result;

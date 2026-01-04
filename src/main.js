@@ -35,6 +35,20 @@ class AapilloAuthApp {
             this.isFirstRun = await this.configManager.isFirstRun();
 
             if (this.isFirstRun || process.argv.includes('--config')) {
+                // Verify admin privileges
+                if (!WindowsAPI.isUserAdmin()) {
+                    log.error('Administrator privileges are required for configuration');
+                    throw new Error('Administrator privileges are required for configuration');
+                }
+
+                // Create Task Scheduler to start app after reboot
+                if (app.isPackaged) {
+                    if (!(await WindowsAPI.startupTaskExists())) {
+                        await WindowsAPI.createStartupTask();
+                        log.info('Startup task created successfully');
+                    }
+                }
+
                 // Show configuration window for admin setup
                 await this.showConfigWindow();
             } else {
@@ -51,12 +65,6 @@ class AapilloAuthApp {
 
     async showConfigWindow() {
         try {
-            // Verify admin privileges
-            /* if (!await WindowsAPI.isRunningAsAdmin()) {
-                log.error('Administrator privileges required for configuration');
-                throw new Error('Administrator privileges required for configuration');
-            } */
-
             this.configWindow = new ConfigWindow(this.configManager, this.userManager);
             await this.configWindow.create();
 
@@ -89,8 +97,12 @@ class AapilloAuthApp {
 
     async showOTPWindow(userId, userConfig) {
         try {
-            if (this.otpWindow) {
-                this.otpWindow.focus();
+            if (
+                this.otpWindow &&
+                this.otpWindow.window &&
+                !this.otpWindow.window.isDestroyed()
+            ) {
+                this.otpWindow.window.focus();
                 return;
             }
 

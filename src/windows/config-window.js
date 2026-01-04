@@ -25,7 +25,8 @@ class ConfigWindow {
                 show: false,
                 autoHideMenuBar: true,
                 menu: null,
-                title: defaultConfig.ui.configWindow.title
+                title: defaultConfig.ui.configWindow.title,
+                icon: path.join(__dirname, 'assets', 'aappillo.ico'),
             });
 
             this.window.once('ready-to-show', () => {

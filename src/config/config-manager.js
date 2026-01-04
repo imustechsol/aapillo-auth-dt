@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const log = require('../utils/logger');
 const { encrypt, decrypt } = require('../utils/crypto-utils');
-const defaultConfig = require('default-config');
+const defaultConfig = require('./default-config');
 
 class ConfigManager {
     constructor() {
@@ -73,10 +73,11 @@ class ConfigManager {
     }
 
     async loadMasterConfig(masterPassword) {
-        console.log('Config path:', this.configFile);
+        log.info('Config path:', this.configFile);
+        log.info('encryptionKey:', this.encryptionKey);
         try {
             await fs.access(this.configFile);
-            const encryptedData = await fs.readFile(this.configFile);
+            const encryptedData = await fs.readFile(this.configFile, 'utf8');
             log.info(`enc data: ${encryptedData}`);
             const decryptedData = decrypt(encryptedData, this.encryptionKey);
 
